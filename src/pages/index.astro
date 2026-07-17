@@ -1,0 +1,98 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+        <style>
+            .profile-header {
+                display: flex;
+                align-items: center;
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+            }
+            .profile-avatar {
+                width: 200px;
+                height: auto;
+                border-radius: 50%;
+                box-shadow: var(--box-shadow);
+                transition: transform 0.3s ease;
+            }
+            .profile-avatar:hover {
+                transform: scale(1.05);
+            }
+            .profile-intro {
+                flex: 1;
+            }
+            .profile-intro h1 {
+                margin: 0;
+            }
+            .subtitle {
+                margin: 0.2rem 0 0 0;
+                color: rgb(var(--gray));
+                font-size: 1.1rem;
+            }
+            @media (max-width: 720px) {
+                .profile-header {
+                    flex-direction: column-reverse;
+                    text-align: center;
+                    gap: 1rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <Header />
+        <main>
+            <div class="profile-header">
+                <div class="profile-intro">
+                    <h1>안녕하세요!</h1>
+                </div>
+                <img
+                    src="https://github.com/nanowater.png"
+                    alt="GitHub Profile"
+                    class="profile-avatar"
+                />
+            </div>
+            <p>
+                안녕하세요! 개인 스튜디오인 <a href="https://ryuseilabs.com"
+                    >Ryusei Labs</a
+                >를 운영하며 개발하고 글을 쓰는 nanowater입니다.
+            </p>
+            <p>
+                이곳에는 주로 개발하면서 겪은 이야기들을 기록하지만, 가끔은 일상
+                속 소소한 생각이나 흥미로운 다른 분야의 이야기도 자유롭게
+                적어보려 합니다. 요즘은 버추얼 기술이나 AI를 활용한 시뮬레이션
+                등, 가상과 실제 환경을 잇는 기술들에 깊은 관심을 두고 있습니다.
+            </p>
+            <p>현재 주로 사용하거나 공부하고 있는 기술 스택입니다:</p>
+            <ul>
+                <li>
+                    <strong>Languages</strong> : JavaScript, TypeScript, Rust, Python,
+                    C, C++
+                </li>
+                <li>
+                    <strong>Frontend</strong> : Astro, SvelteKit, HTML5, Tailwind
+                    CSS
+                </li>
+                <li><strong>Mobile</strong> : Flutter</li>
+                <li><strong>Database</strong> : MySQL, PostgreSQL</li>
+                <li><strong>DevOps</strong> : Docker, Nginx</li>
+                <li><strong>Tools</strong> : Git, GitHub, Zed, VS Code</li>
+            </ul>
+            <p>
+                의견을 나누고 싶으시거나 궁금한 점이 있다면 언제든 <a
+                    href="mailto:nanowater718@gmail.com"
+                    >nanowater718@gmail.com</a
+                > 또는 <a href="https://x.com/ryuseihsn">@ryuseihsn</a>으로
+                편하게 연락해 주세요.
+            </p>
+        </main>
+        <Footer />
+    </body>
+</html>
