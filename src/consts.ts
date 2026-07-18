@@ -3,3 +3,10 @@
 
 export const SITE_TITLE = "nanowater";
 export const SITE_DESCRIPTION = "nanowater의 블로그입니다.";
+
+export const GISCUS_CONFIG = {
+	repo: "nanowater/nanowater.github.io",
+	repoId: "R_kgDOK_cHaQ",
+	category: "Announcements",
+	categoryId: "DIC_kwDOK_cHac4DBcHy",
+};
