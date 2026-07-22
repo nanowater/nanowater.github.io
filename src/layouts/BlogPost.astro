@@ -6,13 +6,16 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import Giscus from '../components/Giscus.astro';
+import TableOfContents, { type Heading } from '../components/TableOfContents.astro';
 import { getOrGenerateHeroImage } from '../utils/heroGenerator';
 
-type Props = Omit<CollectionEntry<'blog'>['data'], 'pubDate' | 'tags'> & {
+type Props = Omit<CollectionEntry<'blog'>['data'], 'pubDate' | 'tags' | 'draft'> & {
 	pubDate?: Date;
 	tags?: string[];
+	draft?: boolean;
 	showComments?: boolean;
 	showHero?: boolean;
+	headings?: Heading[];
 };
 
 const { 
@@ -23,7 +26,8 @@ const {
 	heroImage, 
 	tags = [],
 	showComments = true, 
-	showHero = true 
+	showHero = true,
+	headings = []
 } = Astro.props;
 
 let resolvedHeroImage: string | any = heroImage;
@@ -53,12 +57,54 @@ if (showHero && !heroImage) {
 				border-radius: 12px;
 				box-shadow: var(--box-shadow);
 			}
+			.post-layout {
+				position: relative;
+				width: 100%;
+			}
 			.prose {
 				width: 720px;
 				max-width: calc(100% - 2em);
 				margin: auto;
 				padding: 1em;
 				color: rgb(var(--gray-dark));
+			}
+			.desktop-toc {
+				display: none;
+			}
+			.mobile-toc {
+				display: block;
+				margin: 1.5em 0 2em 0;
+				padding: 1rem 1.2rem;
+				background: rgba(33, 37, 43, 0.6);
+				border: 1px solid rgba(62, 68, 82, 0.8);
+				border-radius: 10px;
+			}
+			@media (min-width: 1200px) {
+				.post-layout {
+					width: 720px;
+					margin: 0 auto;
+					position: relative;
+				}
+				.prose {
+					width: 720px;
+					max-width: 720px;
+					margin: 0 auto;
+					padding: 1em 0;
+				}
+				.mobile-toc {
+					display: none;
+				}
+				.desktop-toc {
+					display: block;
+					position: fixed;
+					right: 2rem;
+					top: 50vh;
+					transform: translateY(-50%);
+					max-height: calc(100vh - 4rem);
+					overflow-y: auto;
+					padding: 0.5rem 0;
+					z-index: 100;
+				}
 			}
 			.title {
 				margin-bottom: 1em;
@@ -119,34 +165,46 @@ if (showHero && !heroImage) {
 						)}
 					</div>
 				)}
-				<div class="prose">
-					<div class="title">
-						{
-							pubDate && (
-								<div class="date">
-									<FormattedDate date={pubDate} />
-									{
-										updatedDate && (
-											<div class="last-updated-on">
-												Last updated on <FormattedDate date={updatedDate} />
-											</div>
-										)
-									}
+				<div class="post-layout">
+					<div class="prose">
+						<div class="title">
+							{
+								pubDate && (
+									<div class="date">
+										<FormattedDate date={pubDate} />
+										{
+											updatedDate && (
+												<div class="last-updated-on">
+													Last updated on <FormattedDate date={updatedDate} />
+												</div>
+											)
+										}
+									</div>
+								)
+							}
+							<h1>{title}</h1>
+							{tags && tags.length > 0 && (
+								<div class="tags">
+									{tags.map((tag: string) => (
+										<a href={`/tags/${tag}/`} class="tag-badge">#{tag}</a>
+									))}
 								</div>
-							)
-						}
-						<h1>{title}</h1>
-						{tags && tags.length > 0 && (
-							<div class="tags">
-								{tags.map((tag: string) => (
-									<a href={`/tags/${tag}/`} class="tag-badge">#{tag}</a>
-								))}
+							)}
+							<hr />
+						</div>
+						{headings && headings.length > 0 && (
+							<div class="mobile-toc">
+								<TableOfContents headings={headings} />
 							</div>
 						)}
-						<hr />
+						<slot />
+						{showComments && <Giscus />}
 					</div>
-					<slot />
-					{showComments && <Giscus />}
+					{headings && headings.length > 0 && (
+						<aside class="desktop-toc">
+							<TableOfContents headings={headings} />
+						</aside>
+					)}
 				</div>
 			</article>
 		</main>

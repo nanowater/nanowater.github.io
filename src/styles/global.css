@@ -91,6 +91,23 @@ img {
 	height: auto;
 	border-radius: 8px;
 }
+/* Image captions */
+.prose figure {
+	margin: 0 0 2em 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.prose figure img {
+	display: block;
+}
+.prose figcaption {
+	margin-top: 0.5em;
+	font-size: 0.85em;
+	color: rgb(var(--gray));
+	text-align: center;
+	font-style: italic;
+}
 code {
 	padding: 2px 5px;
 	background-color: rgb(var(--gray-light));
