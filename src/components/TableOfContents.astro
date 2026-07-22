@@ -1,0 +1,230 @@
+---
+export interface Heading {
+	depth: number;
+	slug: string;
+	text: string;
+}
+
+interface Props {
+	headings: Heading[];
+}
+
+const { headings } = Astro.props;
+
+// Filter headings (h1, h2, h3, h4)
+const filteredHeadings = headings ? headings.filter((h) => h.depth >= 1 && h.depth <= 4) : [];
+---
+
+{filteredHeadings.length > 0 && (
+	<nav class="toc" aria-label="Table of Contents">
+		<ul class="toc-list">
+			{filteredHeadings.map((heading) => (
+				<li class={`toc-item depth-${heading.depth}`}>
+					<a href={`#${heading.slug}`} class="toc-link">
+						<span class="toc-bullet"></span>
+						<span class="toc-text">{heading.text}</span>
+					</a>
+				</li>
+			))}
+		</ul>
+	</nav>
+)}
+
+<style>
+	.toc {
+		font-size: 0.85rem;
+		line-height: 1.5;
+		color: rgb(var(--gray-dark));
+		padding: 0.6rem 0.8rem;
+		border-radius: 12px;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		width: fit-content;
+		border: 1px solid transparent;
+		user-select: none;
+		margin-left: auto;
+	}
+
+	/* Hover state for desktop minimal TOC */
+	.toc:hover {
+		background: rgba(33, 37, 43, 0.95);
+		backdrop-filter: blur(12px);
+		border-color: rgba(62, 68, 82, 0.8);
+		padding: 0.8rem 1.1rem;
+	}
+
+	.toc-header {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-weight: 700;
+		font-size: 0.85rem;
+		color: rgb(var(--black));
+		margin-bottom: 0.6rem;
+		padding-bottom: 0.4rem;
+		border-bottom: 1px solid rgba(62, 68, 82, 0.4);
+		letter-spacing: 0.03em;
+	}
+
+	.toc-icon {
+		color: var(--accent);
+		flex-shrink: 0;
+	}
+
+	.toc-title-text {
+		opacity: 0;
+		max-width: 0;
+		overflow: hidden;
+		white-space: nowrap;
+		transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.toc:hover .toc-title-text {
+		opacity: 1;
+		max-width: 100px;
+	}
+
+	.toc-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+	}
+
+	.toc-item {
+		margin: 0;
+		padding: 0;
+	}
+
+	/* Indentation for dot positions */
+	.toc-item.depth-1 { padding-left: 0; }
+	.toc-item.depth-2 { padding-left: 0.3rem; }
+	.toc-item.depth-3 { padding-left: 0.7rem; }
+	.toc-item.depth-4 { padding-left: 1.1rem; }
+
+	.toc-link {
+		color: rgb(var(--gray));
+		text-decoration: none;
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.2rem 0;
+		transition: all 0.2s ease;
+	}
+
+	/* Dots representation */
+	.toc-bullet {
+		display: inline-block;
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background-color: rgba(171, 178, 191, 0.4);
+		flex-shrink: 0;
+		transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.toc-item.depth-1 .toc-bullet {
+		width: 8px;
+		height: 8px;
+	}
+	.toc-item.depth-3 .toc-bullet,
+	.toc-item.depth-4 .toc-bullet {
+		width: 4px;
+		height: 4px;
+	}
+
+	.toc-link:hover .toc-bullet,
+	.toc-link.active .toc-bullet {
+		background-color: var(--accent);
+		transform: scale(1.5);
+		box-shadow: 0 0 10px var(--accent);
+	}
+
+	/* Text hidden by default, expands on hover */
+	.toc-text {
+		opacity: 0;
+		max-width: 0;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		font-size: 0.83rem;
+	}
+
+	.toc-item.depth-3 .toc-text { font-size: 0.8rem; }
+	.toc-item.depth-4 .toc-text { font-size: 0.76rem; }
+
+	.toc:hover .toc-text {
+		opacity: 1;
+		max-width: 220px;
+	}
+
+	.toc-link:hover .toc-text {
+		color: var(--accent);
+	}
+
+	.toc-link.active .toc-text {
+		color: var(--accent);
+		font-weight: 600;
+	}
+
+	/* Always expand text on mobile layout container */
+	:global(.mobile-toc) .toc {
+		width: 100%;
+		background: rgba(33, 37, 43, 0.6);
+		border: 1px solid rgba(62, 68, 82, 0.8);
+		padding: 1rem 1.2rem;
+	}
+
+	:global(.mobile-toc) .toc-title-text,
+	:global(.mobile-toc) .toc-text {
+		opacity: 1;
+		max-width: 100%;
+	}
+</style>
+
+<script>
+	function initTOC() {
+		const tocLinks = document.querySelectorAll<HTMLAnchorElement>('.toc-link');
+		if (tocLinks.length === 0) return;
+
+		const headingElements = Array.from(
+			document.querySelectorAll<HTMLElement>('.prose h1[id], .prose h2[id], .prose h3[id], .prose h4[id]')
+		);
+
+		if (headingElements.length === 0) return;
+
+		const observerOptions = {
+			root: null,
+			rootMargin: '-80px 0px -60% 0px',
+			threshold: 0,
+		};
+
+		let activeId = '';
+
+		const observer = new IntersectionObserver((entries) => {
+			entries.forEach((entry) => {
+				if (entry.isIntersecting) {
+					activeId = entry.target.id;
+				}
+			});
+
+			if (activeId) {
+				tocLinks.forEach((link) => {
+					const href = link.getAttribute('href')?.replace('#', '');
+					if (href === activeId) {
+						link.classList.add('active');
+					} else {
+						link.classList.remove('active');
+					}
+				});
+			}
+		}, observerOptions);
+
+		headingElements.forEach((h) => observer.observe(h));
+	}
+
+	initTOC();
+	document.addEventListener('astro:page-load', initTOC);
+</script>
